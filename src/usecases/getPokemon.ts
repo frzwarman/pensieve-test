@@ -8,10 +8,7 @@ type GraphQLResponse = {
 };
 
 export const getPokemon = async (): Promise<Pokemon[]> => {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
-
-  const res = await fetch(`${baseUrl}/api/graphql`, {
+  const res = await fetch('/api/graphql', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -30,3 +27,4 @@ export const getPokemon = async (): Promise<Pokemon[]> => {
     new Map(all.map((p) => [p.id, p])).values()
   );
 };
+
