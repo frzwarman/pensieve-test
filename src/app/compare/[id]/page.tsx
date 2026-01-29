@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getPokemon } from '@/usecases/getPokemon';
 import { getPokemonDetail } from '@/usecases/getPokemonDetail';
 import { PokemonCompareView } from '@/components/PokemonCompareView';
+import { Home, Repeat, StepBack } from 'lucide-react';
 
 type PokemonDetail = {
   id: number;
@@ -53,37 +54,38 @@ export default function ComparePage({
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
 
-      {/* BACK TO DETAIL */}
-      <div className="flex flex-col sm:flex-row justify-start gap-3 pt-4">
+      <div className="flex flex-row justify-between items-center gap-3 pt-4">
         <button
           onClick={() => router.back()}
-          className="px-4 py-2 rounded-full bg-white/70 backdrop-blur border shadow hover:bg-white"
+          className="px-4 py-2 rounded-full bg-white/70 backdrop-blur border shadow hover:bg-white cursor-pointer"
         >
-          ← Back
-        </button>
-        <button
-          onClick={() => {
-            setSecond(null);
-            setSelectedName('');
-          }}
-          className="px-4 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600"
-        >
-          🔁 Compare with another Pokémon
+          <StepBack />
         </button>
 
-        <button
-          onClick={() => router.push('/')}
-          className="px-4 py-2 rounded-full bg-slate-600 text-white hover:bg-slate-700"
-        >
-          🏠 Go to Home
-        </button>
+        <div className="flex flex-row gap-3">
+          <button
+            onClick={() => {
+              setSecond(null);
+              setSelectedName('');
+            }}
+            className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-600 text-3xl"
+          >
+            <Repeat />
+          </button>
+
+          <button
+            onClick={() => router.push('/')}
+            className="px-4 py-2 rounded-full bg-slate-600 text-white hover:bg-slate-700 text-3xl"
+          >
+            <Home />
+          </button>
+        </div>
       </div>
 
       <h1 className="text-2xl font-bold text-center font-heading">
         Pokémon Comparison
       </h1>
 
-      {/* SELECT SECOND POKEMON */}
       {!second && (
         <div className="max-w-md mx-auto space-y-2 relative">
 
@@ -132,27 +134,6 @@ export default function ComparePage({
       {first && second && (
         <>
           <PokemonCompareView a={first} b={second} />
-
-          <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4">
-
-            <button
-              onClick={() => {
-                setSecond(null);
-                setSelectedName('');
-              }}
-              className="px-4 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600"
-            >
-              🔁 Compare with another Pokémon
-            </button>
-
-            <button
-              onClick={() => router.push('/')}
-              className="px-4 py-2 rounded-full bg-slate-600 text-white hover:bg-slate-700"
-            >
-              🏠 Go to Home
-            </button>
-
-          </div>
         </>
       )}
     </div>

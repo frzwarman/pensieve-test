@@ -1,3 +1,4 @@
+import { StepBack } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -83,7 +84,7 @@ export function PokemonDetailView({
           hover:bg-white/90 transition
         "
       >
-        ← Back
+        <StepBack />
       </button>
 
       <section className="flex flex-col sm:flex-row items-center gap-8">

@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { Pokemon } from '@/types/pokemon';
 import { PokemonCard } from '@/components/PokemonCard';
 import Image from 'next/image';
+import { StepBack } from 'lucide-react';
 
 const ALL_TYPES = [
   'normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison',
@@ -221,7 +222,7 @@ export function PokedexContainer({
               onClick={() => setPage(p => p - 1)}
               className="px-4 py-2 rounded-xl bg-white/70 backdrop-blur-md border border-white/40 shadow-soft-lg disabled:opacity-50"
             >
-              ←
+              <StepBack />
             </button>
 
             <span className="text-sm text-muted">
