@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 /* ===== TYPES ===== */
 
@@ -66,10 +67,26 @@ export function PokemonDetailView({
     b.base_stat > a.base_stat ? b : a
   );
 
-  return (
-    <main className="max-w-4xl mx-auto space-y-8">
+  const router = useRouter();
 
-      {/* HEADER */}
+  return (
+    <main className="max-w-4xl mx-auto space-y-8 h-full">
+      <button
+        onClick={() => router.push('/')}
+        className="
+    inline-flex items-center gap-2 mb-6
+    px-4 py-2 rounded-full
+    bg-white/70 backdrop-blur-md
+    border border-white/40
+    shadow-soft-lg
+    hover:bg-white/90
+    transition
+  "
+      >
+        <span className="text-lg">←</span>
+        <span className="text-sm font-medium">Back to Pokédex</span>
+      </button>
+
       <div className="flex items-center gap-6">
         <div className="relative w-40 h-40">
           <div className="absolute inset-0 rounded-full bg-cyan-400/20 blur-2xl" />
@@ -117,10 +134,8 @@ export function PokemonDetailView({
         </div>
       </div>
 
-      {/* DESCRIPTION */}
       <p className="italic text-muted">“{flavor}”</p>
 
-      {/* STATS */}
       <div className="space-y-2">
         {detail.stats.map(s => (
           <div key={s.stat.name} className="flex items-center gap-3">
@@ -136,12 +151,10 @@ export function PokemonDetailView({
         ))}
       </div>
 
-      {/* FUN FACT */}
       <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-200">
         💡 Strongest stat: <strong>{strongestStat.stat.name}</strong>
       </div>
 
-      {/* EVOLUTION */}
       <div>
         <h2 className="text-xl font-heading mb-3">Evolution Chain</h2>
         <div className="flex gap-6">

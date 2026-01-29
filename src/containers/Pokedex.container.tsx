@@ -3,7 +3,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Pokemon } from '@/types/pokemon';
 import { PokemonCard } from '@/components/PokemonCard';
-import Image from 'next/image';
 
 const ALL_TYPES = [
   'normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison',
@@ -11,14 +10,12 @@ const ALL_TYPES = [
 ];
 
 export function PokedexContainer({ pokemon, search, sort }: { pokemon: Pokemon[], search: string, sort: 'name' | 'exp' }) {
-  const [compare, setCompare] = useState<Pokemon[]>([]);
   const [page, setPage] = useState(1);
 
   const [types, setTypes] = useState<string[]>([]);
 
   const pageSize = 40;
 
-  // Reset page when filters change
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
@@ -27,21 +24,18 @@ export function PokedexContainer({ pokemon, search, sort }: { pokemon: Pokemon[]
   const filtered = useMemo(() => {
     let result = pokemon;
 
-    // Search
     if (search) {
       result = result.filter(p =>
         p.name.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    // Type filter
     if (types.length) {
       result = result.filter(p =>
         p.types?.some(t => types.includes(t.type.name))
       );
     }
 
-    // Sort
     result = [...result].sort((a, b) => {
       if (sort === 'exp') return b.base_experience - a.base_experience;
       return a.name.localeCompare(b.name);
@@ -55,16 +49,6 @@ export function PokedexContainer({ pokemon, search, sort }: { pokemon: Pokemon[]
     page * pageSize
   );
 
-  const toggleCompare = (p: Pokemon) => {
-    setCompare(prev =>
-      prev.find(x => x.id === p.id)
-        ? prev.filter(x => x.id !== p.id)
-        : prev.length < 2
-          ? [...prev, p]
-          : prev
-    );
-  };
-
   const toggleType = (type: string) => {
     setTypes(prev =>
       prev.includes(type)
@@ -74,22 +58,62 @@ export function PokedexContainer({ pokemon, search, sort }: { pokemon: Pokemon[]
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 -mt-5">
 
-      {/* Controls */}
       <div className="grid gap-4">
-        {/* Type Filter */}
-        <div className="flex flex-wrap gap-2 justify-around">
+        <div className="sm:hidden flex justify-end">
+          <div className="relative w-full">
+            <select
+              value={types[0] ?? ''}
+              onChange={e => setTypes(e.target.value ? [e.target.value] : [])}
+              className="
+        appearance-none w-full
+        rounded-full
+        px-4 py-2 pr-10
+        bg-white/70 backdrop-blur-md
+        border border-white/40
+        shadow-soft-lg
+        text-sm
+        focus:outline-none focus:ring-2 focus:ring-accent
+        cursor-pointer
+        capitalize
+      "
+            >
+              <option value="">All Types</option>
+              {ALL_TYPES.map(type => (
+                <option key={type} value={type} className="capitalize">
+                  {type}
+                </option>
+              ))}
+            </select>
+
+            <svg
+              className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div className="hidden sm:flex flex-wrap gap-3 justify-around">
           {ALL_TYPES.map(type => (
             <button
               key={type}
               onClick={() => toggleType(type)}
               className={`
-                px-3 py-1 rounded-full text-xs capitalize transition
-                ${types.includes(type)
+        rounded-full capitalize transition
+        px-3 py-1 text-xs
+
+        ${types.includes(type)
                   ? 'bg-black text-white'
                   : 'bg-white/70 hover:bg-white'}
-              `}
+      `}
             >
               {type}
             </button>
@@ -99,49 +123,24 @@ export function PokedexContainer({ pokemon, search, sort }: { pokemon: Pokemon[]
 
       </div>
 
-      {/* Compare Panel */}
-      {compare.length === 2 && (
-        <div className="grid grid-cols-2 gap-6 p-6 rounded-3xl bg-white/70 backdrop-blur-xl border border-white/50 shadow-2xl">
-          {compare.map(p => (
-            <div key={p.id} className="text-center">
-              <Image
-                src={p.sprites?.front_default ?? ''}
-                alt={p.name}
-                width={128}
-                height={128}
-                className="mx-auto"
-              />
-              <h3 className="mt-2 text-lg font-heading capitalize">{p.name}</h3>
-              <div className="text-sm text-muted space-y-1 mt-1">
-                <p>EXP: <strong>{p.base_experience}</strong></p>
-                <p>Height: {p.height}</p>
-                <p>Weight: {p.weight}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
-      {/* Grid */}
+
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
         {paginated.map(p => (
           <PokemonCard
             key={p.id}
             pokemon={p}
-            selected={!!compare.find(x => x.id === p.id)}
-            onCompare={() => toggleCompare(p)}
           />
         ))}
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center items-center gap-4 pt-6">
+      <div className="flex justify-center items-center gap-4 p-6">
         <button
           disabled={page === 1}
           onClick={() => setPage(p => p - 1)}
           className="px-4 py-2 rounded-xl bg-white/70 backdrop-blur-md border border-white/40 shadow-soft-lg disabled:opacity-50"
         >
-          ← Prev
+          ←
         </button>
 
         <span className="text-sm text-muted">
@@ -153,7 +152,7 @@ export function PokedexContainer({ pokemon, search, sort }: { pokemon: Pokemon[]
           onClick={() => setPage(p => p + 1)}
           className="px-4 py-2 rounded-xl bg-white/70 backdrop-blur-md border border-white/40 shadow-soft-lg disabled:opacity-50"
         >
-          Next →
+          →
         </button>
       </div>
     </div>

@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { Pokemon } from '@/types/pokemon';
 import { TYPE_COLORS } from '@/constants/theme';
 
-export function PokemonCard({ pokemon, onCompare, selected }: {
-  pokemon: Pokemon; onCompare: () => void; selected: boolean;
+export function PokemonCard({ pokemon, }: {
+  pokemon: Pokemon;
 }) {
   console.log("🚀 ~ PokemonCard ~ pokemon:", pokemon)
   const mainType = pokemon.types?.[0]?.type.name ?? 'normal';
@@ -16,17 +16,14 @@ export function PokemonCard({ pokemon, onCompare, selected }: {
 
   return (
     <article
-      onClick={onCompare}
       className={`
         group relative overflow-hidden rounded-3xl p-4 cursor-pointer
         bg-linear-to-br ${bg}
         shadow-soft-lg transition-all duration-300
         hover:-translate-y-2 hover:shadow-2xl
-        ${selected ? 'ring-2 ring-accent scale-[1.03]' : ''}
         ${isDark ? 'text-white' : 'text-black'}
       `}
     >
-      {/* Pokémon background image */}
       <div
         className="
           absolute inset-0 bg-center bg-no-repeat bg-contain
@@ -37,10 +34,8 @@ export function PokemonCard({ pokemon, onCompare, selected }: {
         style={{ backgroundImage: `url(${bgImage})` }}
       />
 
-      {/* Dark overlay (fades out on hover) */}
       <div className="absolute inset-0 bg-black/20 transition-opacity duration-300 group-hover:opacity-0" />
 
-      {/* Card content (disappears on hover) */}
       <Link
         href={`/pokemon/${pokemon.id}`}
         className="relative block text-center transition-opacity duration-300 group-hover:opacity-0"
