@@ -59,6 +59,8 @@ export function PokemonDetailView({
   species,
   evolutions,
 }: Props) {
+  const router = useRouter();
+
   const flavor =
     species.flavor_text_entries.find(f => f.language.name === 'en')
       ?.flavor_text.replace(/\f/g, ' ') ?? 'No description available.';
@@ -67,52 +69,52 @@ export function PokemonDetailView({
     b.base_stat > a.base_stat ? b : a
   );
 
-  const router = useRouter();
-
   return (
-    <main className="max-w-4xl mx-auto space-y-8 h-full">
+    <main className="max-w-4xl mx-auto space-y-12 p-4">
+
       <button
         onClick={() => router.push('/')}
         className="
-    inline-flex items-center gap-2 mb-6
-    px-4 py-2 rounded-full
-    bg-white/70 backdrop-blur-md
-    border border-white/40
-    shadow-soft-lg
-    hover:bg-white/90
-    transition
-  "
+          inline-flex items-center gap-2
+          px-4 py-2 rounded-full
+          bg-white/70 backdrop-blur-md
+          border border-white/40
+          shadow-soft-lg
+          hover:bg-white/90 transition
+        "
       >
-        <span className="text-lg">←</span>
-        <span className="text-sm font-medium">Back to Pokédex</span>
+        ← Back
       </button>
 
-      <div className="flex items-center gap-6">
-        <div className="relative w-40 h-40">
+      <section className="flex flex-col sm:flex-row items-center gap-8">
+        <div className="relative w-48 h-48">
           <div className="absolute inset-0 rounded-full bg-cyan-400/20 blur-2xl" />
           <Image
             src={detail.sprites.front_default}
             alt={name}
-            width={160}
-            height={160}
+            width={192}
+            height={192}
+            className="relative z-10"
           />
         </div>
 
-        <div>
+        <div className="text-center sm:text-left space-y-3">
           <h1 className="text-4xl font-heading capitalize">{name}</h1>
 
-          <div className="flex gap-2 mt-2">
+          <div className="flex justify-center sm:justify-start gap-2">
             {detail.types.map(t => (
               <span
                 key={t.type.name}
-                className={`px-3 py-1 rounded-full text-sm ${TYPE_COLORS[t.type.name]}`}
+                className={`px-3 py-1 rounded-full text-sm capitalize ${TYPE_COLORS[t.type.name]}`}
               >
                 {t.type.name}
               </span>
             ))}
           </div>
 
-          <div className="mt-3 flex gap-3">
+          <p className="italic text-muted max-w-md">“{flavor}”</p>
+
+          <div className="flex justify-center sm:justify-start gap-3 pt-2">
             <Link
               // eslint-disable-next-line react-hooks/purity
               href={`/pokemon/${Math.floor(Math.random() * 151) + 1}`}
@@ -132,48 +134,58 @@ export function PokemonDetailView({
             </button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <p className="italic text-muted">“{flavor}”</p>
+      <section className="space-y-6">
+        <h2 className="text-xl font-heading">Combat Info</h2>
 
-      <div className="space-y-2">
-        {detail.stats.map(s => (
-          <div key={s.stat.name} className="flex items-center gap-3">
-            <span className="w-24 capitalize text-sm">{s.stat.name}</span>
-            <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-cyan-500"
-                style={{ width: `${(s.base_stat / 200) * 100}%` }}
-              />
-            </div>
-            <span>{s.base_stat}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-200">
-        💡 Strongest stat: <strong>{strongestStat.stat.name}</strong>
-      </div>
-
-      <div>
-        <h2 className="text-xl font-heading mb-3">Evolution Chain</h2>
-        <div className="flex gap-6">
-          {evolutions.map(e => {
-            const evoId = e.species.url.split('/').slice(-2)[0];
-            return (
-              <Link key={e.species.name} href={`/pokemon/${evoId}`} className="text-center">
-                <Image
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evoId}.png`}
-                  alt={e.species.name}
-                  width={96}
-                  height={96}
+        <div className="space-y-3">
+          {detail.stats.map(s => (
+            <div key={s.stat.name} className="flex items-center gap-3">
+              <span className="w-24 capitalize text-sm">{s.stat.name}</span>
+              <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-cyan-500"
+                  style={{ width: `${(s.base_stat / 200) * 100}%` }}
                 />
-                <p className="capitalize">{e.species.name}</p>
-              </Link>
-            );
-          })}
+              </div>
+              <span>{s.base_stat}</span>
+            </div>
+          ))}
         </div>
-      </div>
+
+        <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-200">
+          💡 Strongest stat: <strong>{strongestStat.stat.name}</strong>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-xl font-heading">World Info</h2>
+
+        <div>
+          <h3 className="font-medium mb-2">Evolution Chain</h3>
+          <div className="flex gap-6 flex-wrap">
+            {evolutions.map(e => {
+              const evoId = e.species.url.split('/').slice(-2)[0];
+              return (
+                <Link
+                  key={e.species.name}
+                  href={`/pokemon/${evoId}`}
+                  className="text-center"
+                >
+                  <Image
+                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evoId}.png`}
+                    alt={e.species.name}
+                    width={96}
+                    height={96}
+                  />
+                  <p className="capitalize">{e.species.name}</p>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
     </main>
   );

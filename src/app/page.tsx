@@ -72,7 +72,7 @@ export default function Home() {
 
 
       <section>
-        <PokemonListContainer search={search} sort={sort} />
+        <PokemonListContainer search={search} sort={sort} setSearch={setSearch} />
       </section>
     </main>
   );

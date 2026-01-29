@@ -1,27 +1,28 @@
 @config "../../tailwind.config.ts";
 @import "tailwindcss";
 
-/* custom styles below */
 :root{
   --bg-1: #f8fafc;
   --bg-2: #f1f5f9;
   --accent: #06b6d4;
   --muted: #64748b;
+  --font-inter: 'Inter', sans-serif;
+  --font-space: 'Space Grotesk', sans-serif;
 }
 
-html,body{
-  height:fit-content;
+html, body {
+  min-height: 100%;
 }
 
 body{
-  font-family: Inter, system-ui;
+  min-height: 100vh;
+  font-family: var(--font-inter);
   background:
     radial-gradient(circle at top, #e0f2fe, transparent 60%),
     linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
   color: #0f172a;
 }
 
-/* Glassy card */
 .card-glass{
   background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
   backdrop-filter: blur(6px) saturate(125%);

@@ -3,7 +3,6 @@
 import { useEffect, useState, use } from 'react';
 import { getPokemon } from '@/usecases/getPokemon';
 import { getPokemonDetail } from '@/usecases/getPokemonDetail';
-import { getPokemonSpecies } from '@/usecases/getPokemonSpecies';
 import { getEvolutionChain } from '@/usecases/getEvolutionChain';
 import { PokemonDetailView } from '@/components/PokemonDetailView';
 
@@ -45,27 +44,55 @@ export default function PokemonDetailPage({
   const [evolution, setEvolution] = useState<EvolutionChain | null>(null);
   const [name, setName] = useState<string>('');
 
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     const load = async () => {
-      const pokemons = await getPokemon();
-      const pokemon = pokemons.find(p => p.id === Number(id));
-      if (!pokemon) return;
+      try {
+        const pokemons = await getPokemon();
+        const pokemon = pokemons.find(p => p.id === Number(id));
+        if (!pokemon) return;
 
-      setName(pokemon.name);
+        setName(pokemon.name);
 
-      const detailData = await getPokemonDetail(pokemon.id);
-      const speciesData = await getPokemonSpecies(pokemon.id);
-      const evolutionData = await getEvolutionChain(
-        speciesData.evolution_chain.url
-      );
+        const detailData = await getPokemonDetail(pokemon.id);
 
-      setDetail(detailData);
-      setSpecies(speciesData);
-      setEvolution(evolutionData);
+        const speciesData = await fetch(detailData.species.url).then(res => {
+          if (!res.ok) throw new Error('Failed to fetch species');
+          return res.json();
+        });
+
+        const evolutionData = await getEvolutionChain(
+          speciesData.evolution_chain.url
+        );
+
+        setDetail(detailData);
+        setSpecies(speciesData);
+        setEvolution(evolutionData);
+      } catch (err) {
+        console.error(err);
+        setError(true);
+      }
     };
 
     load();
   }, [id]);
+
+  if (error) {
+    return (
+      <div className="text-center py-20 space-y-4">
+        <p className="text-lg font-semibold">Failed to load Pokémon</p>
+        <p className="text-gray-500">Please try again.</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 rounded-lg bg-red-500 text-white"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
 
   if (!detail || !species || !evolution) {
     return (
