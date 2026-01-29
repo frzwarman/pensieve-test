@@ -5,9 +5,7 @@ export async function POST(req: Request) {
 
   const res = await fetch('https://graphql.pokeapi.co/v1beta2', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
 

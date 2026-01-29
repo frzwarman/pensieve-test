@@ -1,45 +1,91 @@
-import { getPokemon } from '@/usecases/getPokemon';
-import Image from 'next/image';
+'use client';
 
-export default async function PokemonDetail({
+import { useEffect, useState, use } from 'react';
+import { getPokemon } from '@/usecases/getPokemon';
+import { getPokemonDetail } from '@/usecases/getPokemonDetail';
+import { getPokemonSpecies } from '@/usecases/getPokemonSpecies';
+import { getEvolutionChain } from '@/usecases/getEvolutionChain';
+import { PokemonDetailView } from '@/components/PokemonDetailView';
+
+/* ===== TYPES ===== */
+
+type PokemonDetail = {
+  sprites: { front_default: string };
+  cries: { latest: string };
+  types: { type: { name: string } }[];
+  stats: { base_stat: number; stat: { name: string } }[];
+};
+
+type PokemonSpecies = {
+  flavor_text_entries: {
+    flavor_text: string;
+    language: { name: string };
+  }[];
+  evolution_chain: { url: string };
+};
+
+type EvolutionNode = {
+  species: { name: string; url: string };
+  evolves_to: EvolutionNode[];
+};
+
+type EvolutionChain = {
+  chain: EvolutionNode;
+};
+
+export default function PokemonDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const pokemons = await getPokemon();
-  const numericId = Number(id);
+  // ✅ unwrap params correctly
+  const { id } = use(params);
 
-  const pokemon = pokemons.find(p => p.id === numericId);
+  const [detail, setDetail] = useState<PokemonDetail | null>(null);
+  const [species, setSpecies] = useState<PokemonSpecies | null>(null);
+  const [evolution, setEvolution] = useState<EvolutionChain | null>(null);
+  const [name, setName] = useState<string>('');
 
-  if (!pokemon) {
-    return (
-      <main className="p-6">
-        <h1 className="text-xl font-bold">Pokemon not found</h1>
-        <p>Requested ID: {id}</p>
-        <p>Loaded: {pokemons.length} pokemons</p>
-      </main>
-    );
+  useEffect(() => {
+    const load = async () => {
+      const pokemons = await getPokemon();
+      const pokemon = pokemons.find(p => p.id === Number(id));
+      if (!pokemon) return;
+
+      setName(pokemon.name);
+
+      const detailData = await getPokemonDetail(pokemon.id);
+      const speciesData = await getPokemonSpecies(pokemon.id);
+      const evolutionData = await getEvolutionChain(
+        speciesData.evolution_chain.url
+      );
+
+      setDetail(detailData);
+      setSpecies(speciesData);
+      setEvolution(evolutionData);
+    };
+
+    load();
+  }, [id]); // ✅ now safe
+
+  if (!detail || !species || !evolution) {
+    return <p className="text-center mt-10">Loading Pokémon…</p>;
+  }
+
+  const evolutions: EvolutionNode[] = [];
+  let chain: EvolutionNode | undefined = evolution.chain;
+
+  while (chain) {
+    evolutions.push(chain);
+    chain = chain.evolves_to[0];
   }
 
   return (
-    <main className="p-6">
-      <h1 className="text-3xl font-bold capitalize mb-4">
-        {pokemon.name}
-      </h1>
-
-      <Image
-        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
-        alt={pokemon.name}
-        width={160}
-        height={160}
-      />
-
-      <div className="mt-4 space-y-2">
-        <p>Base EXP: {pokemon.base_experience}</p>
-        <p>Height: {pokemon.height}</p>
-        <p>Weight: {pokemon.weight}</p>
-      </div>
-    </main>
+    <PokemonDetailView
+      name={name}
+      detail={detail}
+      species={species}
+      evolutions={evolutions}
+    />
   );
 }
