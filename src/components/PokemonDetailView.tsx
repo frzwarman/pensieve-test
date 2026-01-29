@@ -128,11 +128,19 @@ export function PokemonDetailView({
                 const audio = new Audio(detail.cries.latest);
                 audio.play();
               }}
-              className="px-4 py-2 rounded-xl bg-slate-200"
+              className="px-4 py-2 rounded-xl bg-slate-200 cursor-pointer"
             >
               🔊 Cry
             </button>
+
+            <Link
+              href={`/compare/${name}`}
+              className="px-4 py-2 rounded-xl bg-red-500 text-white"
+            >
+              ⚔️ Compare
+            </Link>
           </div>
+
         </div>
       </section>
 
