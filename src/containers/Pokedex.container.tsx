@@ -14,15 +14,17 @@ export function PokedexContainer({
   pokemon,
   search,
   sort,
-  setSearch
+  setSearch,
+  types,
+  setTypes
 }: {
   pokemon: Pokemon[];
   search: string;
   sort: 'name' | 'exp';
   setSearch: React.Dispatch<React.SetStateAction<string>>
+  types: string[], setTypes: React.Dispatch<React.SetStateAction<string[]>>
 }) {
   const [page, setPage] = useState(1);
-  const [types, setTypes] = useState<string[]>([]);
 
   const pageSize = 40;
 

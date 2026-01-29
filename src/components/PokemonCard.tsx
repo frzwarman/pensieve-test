@@ -6,7 +6,6 @@ import { TYPE_COLORS } from '@/constants/theme';
 export function PokemonCard({ pokemon, }: {
   pokemon: Pokemon;
 }) {
-  console.log("🚀 ~ PokemonCard ~ pokemon:", pokemon)
   const mainType = pokemon.types?.[0]?.type.name ?? 'normal';
   const bg = TYPE_COLORS[mainType] ?? TYPE_COLORS.normal;
 

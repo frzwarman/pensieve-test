@@ -2,23 +2,36 @@
 
 import { PokemonListContainer } from '@/containers/PokemonListContainer';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<'name' | 'exp'>('name');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initialSearch = searchParams.get('search') ?? '';
+  const initialSort = (searchParams.get('sort') as 'name' | 'exp') ?? 'name';
+  const initialTypes =
+    searchParams.get('types')?.split(',').filter(Boolean) ?? [];
+
+  const [types, setTypes] = useState<string[]>(initialTypes);
+  const [search, setSearch] = useState(initialSearch);
+  const [sort, setSort] = useState<'name' | 'exp'>(initialSort);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (search) params.set('search', search);
+    if (sort) params.set('sort', sort);
+    if (types.length) params.set('types', types.join(','));
+
+    router.replace(`/?${params.toString()}`);
+  }, [search, sort, types, router]);
 
   return (
     <main>
       <header className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-
-        <Image
-          src="/pokedex-logo.png"
-          alt="Pokédex"
-          width={240}
-          height={60}
-        />
-
+        <Image src="/pokedex-logo.png" alt="Pokédex" width={240} height={60} />
 
         <div className="flex flex-row gap-3 w-full sm:w-auto">
           <input
@@ -26,13 +39,12 @@ export default function Home() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="
-        flex-1
-        rounded-full px-4 py-2
-        bg-white/70 backdrop-blur-md
-        border border-white/40
-        shadow-soft-lg
-        focus:outline-none focus:ring-2 focus:ring-accent
-      "
+              flex-1 rounded-full px-4 py-2
+              bg-white/70 backdrop-blur-md
+              border border-white/40
+              shadow-soft-lg
+              focus:outline-none focus:ring-2 focus:ring-accent
+            "
           />
 
           <div className="relative w-28">
@@ -40,15 +52,14 @@ export default function Home() {
               value={sort}
               onChange={e => setSort(e.target.value as 'name' | 'exp')}
               className="
-      appearance-none w-full
-      rounded-full px-4 py-4 pr-9
-      bg-white/70 backdrop-blur-md
-      border border-white/40
-      shadow-soft-lg
-      text-sm
-      focus:outline-none focus:ring-2 focus:ring-accent
-      cursor-pointer
-    "
+                appearance-none w-full
+                rounded-full px-4 py-4 pr-9
+                bg-white/70 backdrop-blur-md
+                border border-white/40
+                shadow-soft-lg text-sm
+                focus:outline-none focus:ring-2 focus:ring-accent
+                cursor-pointer
+              "
             >
               <option value="name">Name</option>
               <option value="exp">EXP</option>
@@ -66,13 +77,11 @@ export default function Home() {
               />
             </svg>
           </div>
-
         </div>
       </header>
 
-
       <section>
-        <PokemonListContainer search={search} sort={sort} setSearch={setSearch} />
+        <PokemonListContainer search={search} sort={sort} setSearch={setSearch} types={types} setTypes={setTypes} />
       </section>
     </main>
   );

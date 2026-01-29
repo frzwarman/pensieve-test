@@ -7,8 +7,8 @@ import { LoadingGrid } from '@/components/LoadingSkeleton';
 import { Pokemon } from '@/types/pokemon';
 import { PokedexContainer } from './Pokedex.container';
 
-export function PokemonListContainer({ search, sort, setSearch }: {
-  search: string, sort: 'name' | 'exp', setSearch: React.Dispatch<React.SetStateAction<string>>
+export function PokemonListContainer({ search, sort, setSearch, types, setTypes }: {
+  search: string, sort: 'name' | 'exp', setSearch: React.Dispatch<React.SetStateAction<string>>, types: string[], setTypes: React.Dispatch<React.SetStateAction<string[]>>
 }) {
   const [pokemon, setPokemon] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,5 +40,5 @@ export function PokemonListContainer({ search, sort, setSearch }: {
   if (!pokemon.length)
     return <p className="text-center text-sm text-muted">No Pokémon found.</p>;
 
-  return <PokedexContainer pokemon={pokemon} search={search} sort={sort} setSearch={setSearch} />;
+  return <PokedexContainer pokemon={pokemon} search={search} sort={sort} setSearch={setSearch} types={types} setTypes={setTypes} />;
 }

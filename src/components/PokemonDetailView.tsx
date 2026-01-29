@@ -73,7 +73,7 @@ export function PokemonDetailView({
     <main className="max-w-4xl mx-auto space-y-12 p-4">
 
       <button
-        onClick={() => router.push('/')}
+        onClick={() => router.back()}
         className="
           inline-flex items-center gap-2
           px-4 py-2 rounded-full
